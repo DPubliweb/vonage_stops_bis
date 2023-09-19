@@ -168,8 +168,8 @@ def inbound_sms():
         return "Requête invalide", 400
     
     # Ajout des données à la feuille principale et mise à jour de S3
-    append_to_sheet(data)
-    #update_s3(data)
+    #append_to_sheet(data)
+    update_s3(data)
 
     # Si la réponse est '1' et que msisdn n'est pas déjà dans la feuille, ajoutez-le
     #if '1' == data['text'] and not is_msisdn_in_sheet(data['msisdn']):
