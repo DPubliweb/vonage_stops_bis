@@ -77,16 +77,16 @@ def create_redshift_connection():
         password=password
 )
 
-def append_to_sheet(data):
-    # Accédez à la feuille Google par son nom.
-    sheet = client.open("Réponses - Publiweb").sheet1
-
-    # Convertissez le dictionnaire en une liste pour le garder simple
-    # Vous pouvez personnaliser cet ordre selon la structure de votre feuille.
-    row = [data['msisdn'], data['text'], data['keyword'], data['message-timestamp']]
-    
-    # Ajoutez les données à la dernière ligne
-    sheet.append_row(row)
+#def append_to_sheet(data):
+#    # Accédez à la feuille Google par son nom.
+#    sheet = client.open("Réponses - Publiweb").sheet1
+#
+#    # Convertissez le dictionnaire en une liste pour le garder simple
+#    # Vous pouvez personnaliser cet ordre selon la structure de votre feuille.
+#    row = [data['msisdn'], data['text'], data['keyword'], data['message-timestamp']]
+#    
+#    # Ajoutez les données à la dernière ligne
+#    sheet.append_row(row)
 
 def append_to_sheet_nely(data, lastname, firstname, utm, zipcode, type_chauffage, email):
     # Accédez à la feuille Google par son nom.
