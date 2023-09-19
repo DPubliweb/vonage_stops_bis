@@ -169,7 +169,7 @@ def inbound_sms():
     
     # Ajout des données à la feuille principale et mise à jour de S3
     append_to_sheet(data)
-    update_s3(data)
+    #update_s3(data)
 
     # Si la réponse est '1' et que msisdn n'est pas déjà dans la feuille, ajoutez-le
     #if '1' == data['text'] and not is_msisdn_in_sheet(data['msisdn']):
@@ -212,6 +212,7 @@ def inbound_sms():
             print('Data sent to Nely CRM successfully')
        
     return "Done SR !"
+
 
 
 if __name__ == "__main__":
