@@ -140,6 +140,12 @@ def phone_exists_in_sheet_nely(phone_number):
     column_data = worksheet.col_values(1) # Si vous utilisez `gspread`
     return phone_number in column_data
 
+def phone_exists_in_sheet_pw(phone_number):
+    # Obtenez toutes les données de la première colonne (index 0)
+    worksheet = client.open("Audit - Publiweb").sheet1
+    column_data = worksheet.col_values(1) # Si vous utilisez `gspread`
+    return phone_number in column_data
+
 
 def get_data_from_redshift(msisdn): #base nely reduite
     conn = create_redshift_connection()
@@ -253,7 +259,7 @@ def inbound_sms():
                     'mode_chauffage': type_chauffage,
                     'email': email
                 }
-                print(data_publiweb)
+                print(data_publiweb, 'Nely')
     
                 response = requests.post(url_publiweb, headers=headers_publiweb, json=data_publiweb)
     
@@ -274,7 +280,19 @@ def inbound_sms():
             tel_global, lastname, firstname, utm, zipcode, type_chauffage, email = results[0]
 
         if tel_global and '1' == data['text']:
-            append_to_sheet_publiweb(data, lastname, firstname, utm, zipcode, type_chauffage, email)
+            if not phone_exists_in_sheet_nely(tel_global):
+                append_to_sheet_publiweb(data, lastname, firstname, utm, zipcode, type_chauffage, email)
+                data_publiweb = {
+                    'date': data['message-timestamp'],  # Utilisez une date dynamique si nécessaire
+                    'telephone': tel_global,
+                    'firstname': firstname,
+                    'lastname': lastname,
+                    'utm': utm,
+                    'zip_code': zipcode,
+                    'mode_chauffage': type_chauffage,
+                    'email': email
+                }
+                print(data_publiweb, 'Publiweb')
 
         print('Data got from Publiweb')
 
