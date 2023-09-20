@@ -83,7 +83,7 @@ def append_to_sheet_1(data):
 
     # Convertissez le dictionnaire en une liste pour le garder simple
     # Vous pouvez personnaliser cet ordre selon la structure de votre feuille.
-    row = [data['msisdn'], data['text'], data['keyword'], data['message-timestamp']], data['api-key']
+    row = [data['msisdn'], data['text'], data['keyword'], data['message-timestamp']]
     
     # Ajoutez les données à la dernière ligne
     sheet.append_row(row)
@@ -230,7 +230,11 @@ def inbound_sms():
     
     if 'stop' in data['text'].lower() or '36117' in data['text']:
         update_s3(data)
-        append_to_sheet_1(data)
+    else:
+        if data['api-key'] == 'b0dcb13a' and not phone_exists_in_sheet_1(data['msisdn']):
+            append_to_sheet_1(data)
+        elif data['api-key'] == '7e357c33' and not phone_exists_in_sheet_2(data['msisdn']):
+            append_to_sheet_2(data)
 
 
 
