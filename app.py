@@ -227,8 +227,9 @@ def inbound_sms():
     else:
         if data['api-key'] == 'b0dcb13a' and not phone_exists_in_sheet_1(data['msisdn']):
             append_to_sheet_1(data)
-        elif not phone_exists_in_sheet_2(data['msisdn']):
+        elif data['api-key'] == '7e357c33' and not phone_exists_in_sheet_2(data['msisdn']):
             append_to_sheet_2(data)
+
 
 
     # Récupération des données de Redshift
@@ -271,6 +272,7 @@ def inbound_sms():
         tel_global, lastname, firstname, utm, zipcode, type_chauffage, email = (None, None, None, None, None, None, None)
         if results:
             tel_global, lastname, firstname, utm, zipcode, type_chauffage, email = results[0]
+
         if tel_global and '1' == data['text']:
             append_to_sheet_publiweb(data, lastname, firstname, utm, zipcode, type_chauffage, email)
 
