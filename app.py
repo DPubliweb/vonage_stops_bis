@@ -110,6 +110,17 @@ def append_to_sheet_nely(data, lastname, firstname, utm, zipcode, type_chauffage
     # Ajoutez les données à la dernière ligne
     sheet.append_row(row)
 
+def append_to_sheet_publiweb(data, lastname, firstname, utm, zipcode, type_chauffage, email):
+    # Accédez à la feuille Google par son nom.
+    sheet = client.open("Audit - Publiweb").sheet1
+
+    # Convertissez le dictionnaire en une liste pour le garder simple
+    # Vous pouvez personnaliser cet ordre selon la structure de votre feuille.
+    row = [data['msisdn'], data['text'], data['message-timestamp'],lastname, firstname, utm, zipcode, type_chauffage, email ]
+    
+    # Ajoutez les données à la dernière ligne
+    sheet.append_row(row)
+
 
 def phone_exists_in_sheet_1(phone_number):
     # Obtenez toutes les données de la première colonne (index 0)
@@ -130,11 +141,26 @@ def phone_exists_in_sheet_nely(phone_number):
     return phone_number in column_data
 
 
-def get_data_from_redshift(msisdn):
+def get_data_from_redshift(msisdn): #base nely reduite
     conn = create_redshift_connection()
     try:
         with conn.cursor() as cursor:
             query = "SELECT tel_global, lastname, firstname, utm, zipcode, type_chauffage, email FROM base_nelly_reduite WHERE tel_global = %s"
+            cursor.execute(query, (msisdn,))
+            results = cursor.fetchall()
+            return results
+    except Exception as e:
+        # Log the error and/or handle it as needed
+        logging.error(f"Error querying Redshift: {e}")
+        return None
+    finally:
+        conn.close()
+
+def get_data_from_redshift_2(msisdn): #base publiweb reduite
+    conn = create_redshift_connection()
+    try:
+        with conn.cursor() as cursor:
+            query = "SELECT tel_global, lastname, firstname, utm, zipcode, type_chauffage, email FROM base_publiweb_audit_energetique WHERE tel_global = %s"
             cursor.execute(query, (msisdn,))
             results = cursor.fetchall()
             return results
@@ -201,12 +227,17 @@ def inbound_sms():
     else:
         if data['api-key'] == 'b0dcb13a' and not phone_exists_in_sheet_1(data['msisdn']):
             append_to_sheet_1(data)
-        elif not phone_exists_in_sheet_1(data['msisdn']):
+        elif not phone_exists_in_sheet_2(data['msisdn']):
             append_to_sheet_2(data)
 
 
     # Récupération des données de Redshift
-    results = get_data_from_redshift(data['msisdn'])
+    if data['api-key'] == 'b0dcb13a':
+        results = get_data_from_redshift(data['msisdn'])
+        print('Data got from Nely')
+    else:
+        results = get_data_from_redshift_2(data['msisdn'])
+        print('Data got from Publiweb')
 
     # Initialisation des variables
     tel_global, lastname, firstname, utm, zipcode, type_chauffage, email = (None, None, None, None, None, None, None)
@@ -216,7 +247,7 @@ def inbound_sms():
         tel_global, lastname, firstname, utm, zipcode, type_chauffage, email = results[0]
 
     # Envoi à l'endpoint publiweb si nécessaire
-    if tel_global and '1' == data['text']:
+    if tel_global and '1' == data['text'] and data['api-key'] == 'b0dcb13a':
         if not phone_exists_in_sheet_nely(tel_global):
             append_to_sheet_nely(data, lastname, firstname, utm, zipcode, type_chauffage, email)
             url_publiweb = 'https://automation-vt-f29dcdcf11fd.herokuapp.com/lead_pblw/aIR7DvmX9cgTO55g8di6jvLPAvGBccm'
@@ -241,6 +272,10 @@ def inbound_sms():
                 print('Data sent to Nely CRM successfully')
         else:
             logging.info(f"Phone number {tel_global} already exists in the sheet, skipping entry and POST request.")
+    elif tel_global and '1' == data['text']:
+        append_to_sheet_publiweb(data, lastname, firstname, utm, zipcode, type_chauffage, email)
+        print('Data sent to Publiweb sheet')
+
     return "Done SR !"
        
 
