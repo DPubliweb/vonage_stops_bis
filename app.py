@@ -77,16 +77,27 @@ def create_redshift_connection():
         password=password
 )
 
-#def append_to_sheet(data):
-#    # Accédez à la feuille Google par son nom.
-#    sheet = client.open("Réponses - Publiweb").sheet1
-#
-#    # Convertissez le dictionnaire en une liste pour le garder simple
-#    # Vous pouvez personnaliser cet ordre selon la structure de votre feuille.
-#    row = [data['msisdn'], data['text'], data['keyword'], data['message-timestamp']]
-#    
-#    # Ajoutez les données à la dernière ligne
-#    sheet.append_row(row)
+def append_to_sheet_1(data):
+    # Accédez à la feuille Google par son nom.
+    sheet = client.open("Réponses - Publiweb").sheet1
+
+    # Convertissez le dictionnaire en une liste pour le garder simple
+    # Vous pouvez personnaliser cet ordre selon la structure de votre feuille.
+    row = [data['msisdn'], data['text'], data['keyword'], data['message-timestamp']]
+    
+    # Ajoutez les données à la dernière ligne
+    sheet.append_row(row)
+
+def append_to_sheet_2(data):
+    # Accédez à la feuille Google par son nom.
+    sheet = client.open("Réponses - Publiweb").worksheet('Route 2')
+
+    # Convertissez le dictionnaire en une liste pour le garder simple
+    # Vous pouvez personnaliser cet ordre selon la structure de votre feuille.
+    row = [data['msisdn'], data['text'], data['keyword'], data['message-timestamp']]
+    
+    # Ajoutez les données à la dernière ligne
+    sheet.append_row(row)
 
 def append_to_sheet_nely(data, lastname, firstname, utm, zipcode, type_chauffage, email):
     # Accédez à la feuille Google par son nom.
@@ -99,14 +110,20 @@ def append_to_sheet_nely(data, lastname, firstname, utm, zipcode, type_chauffage
     # Ajoutez les données à la dernière ligne
     sheet.append_row(row)
 
-def is_msisdn_in_sheet(msisdn):
-    # Accédez à la feuille Google par son nom.
-    sheet = client.open("Réponses - Nely").sheet1
-    # Obtenez toutes les valeurs de la première colonne
-    msisdn_column = sheet.col_values(1)
-    return msisdn in msisdn_column
 
-def phone_exists_in_sheet(phone_number):
+def phone_exists_in_sheet_1(phone_number):
+    # Obtenez toutes les données de la première colonne (index 0)
+    worksheet = client.open("Réponses - Publiweb").sheet1
+    column_data = worksheet.col_values(1) # Si vous utilisez `gspread`
+    return phone_number in column_data
+
+def phone_exists_in_sheet_2(phone_number):
+    # Obtenez toutes les données de la première colonne (index 0)
+    worksheet = client.open("Réponses - Publiweb").worksheet('Route 2')
+    column_data = worksheet.col_values(1) # Si vous utilisez `gspread`
+    return phone_number in column_data
+
+def phone_exists_in_sheet_nely(phone_number):
     # Obtenez toutes les données de la première colonne (index 0)
     worksheet = client.open("Réponses - Nely").sheet1
     column_data = worksheet.col_values(1) # Si vous utilisez `gspread`
@@ -168,7 +185,8 @@ def inbound_sms():
             'msisdn': request.form.get('msisdn'),
             'text': request.form.get('text'),
             'keyword': request.form.get('keyword'),
-            'message-timestamp': request.form.get('message-timestamp')
+            'message-timestamp': request.form.get('message-timestamp'),
+            'api-key': request.form.get('api-key')
         }
     else:
         logging.warning("Request is neither JSON nor form-data")
@@ -176,13 +194,16 @@ def inbound_sms():
     
     # Ajout des données à la feuille principale et mise à jour de S3
     #append_to_sheet(data)
-    update_s3(data)
 
-    # Si la réponse est '1' et que msisdn n'est pas déjà dans la feuille, ajoutez-le
-    #if '1' == data['text'] and not is_msisdn_in_sheet(data['msisdn']):
-    #    append_to_sheet_nely(data, lastname, firstname, utm, zipcode, type_chauffage)
-    #else:
-    #    print(data['msisdn'],' not a 1 response or msisdn already exists in the sheet')
+    
+    if 'stop' in data['text'].lower() or '36117' in data['text']:
+        update_s3(data)
+    else:
+        if data['api-key'] == 'b0dcb13a' and not phone_exists_in_sheet_1(data['msisdn']):
+            append_to_sheet_1(data)
+        elif not phone_exists_in_sheet_1(data['msisdn']):
+            append_to_sheet_2(data)
+
 
     # Récupération des données de Redshift
     results = get_data_from_redshift(data['msisdn'])
@@ -196,7 +217,7 @@ def inbound_sms():
 
     # Envoi à l'endpoint publiweb si nécessaire
     if tel_global and '1' == data['text']:
-        if not phone_exists_in_sheet(tel_global):
+        if not phone_exists_in_sheet_nely(tel_global):
             append_to_sheet_nely(data, lastname, firstname, utm, zipcode, type_chauffage, email)
             url_publiweb = 'https://automation-vt-f29dcdcf11fd.herokuapp.com/lead_pblw/aIR7DvmX9cgTO55g8di6jvLPAvGBccm'
             headers_publiweb = {'Content-Type': 'application/json'}
