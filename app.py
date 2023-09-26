@@ -77,7 +77,7 @@ def create_redshift_connection():
         password=password
 )
 
-def append_to_sheet_1(data):
+def append_to_sheet_1(data, lastname, firstname, utm, zipcode, type_chauffage, email, origine):
     # Accédez à la feuille Google par son nom.
     sheet = client.open("Réponses - Publiweb").sheet1
 
@@ -226,24 +226,13 @@ def inbound_sms():
     
     # Ajout des données à la feuille principale et mise à jour de S3
     #append_to_sheet(data)
-
-    
-    if 'stop' in data['text'].lower() or '36117' in data['text']:
-        update_s3(data)
-    else:
-        if data['api-key'] == 'b0dcb13a' and not phone_exists_in_sheet_1(data['msisdn']):
-            append_to_sheet_1(data)
-        elif data['api-key'] == '7e357c33' and not phone_exists_in_sheet_2(data['msisdn']):
-            append_to_sheet_2(data)
-
-
-
-    # Récupération des données de Redshift
-    if data['api-key'] == 'b0dcb13a':
-        results = get_data_from_redshift(data['msisdn'])
-        tel_global, lastname, firstname, utm, zipcode, type_chauffage, email = (None, None, None, None, None, None, None)
-        if results:
-            tel_global, lastname, firstname, utm, zipcode, type_chauffage, email = results[0]
+    results = get_data_from_redshift(data['msisdn'])
+    if results:
+        tel_global, lastname, firstname, utm, zipcode, type_chauffage, email = results[0]
+        origine = "Nely"
+        append_to_sheet_1(data, lastname, tel_global, lastname, firstname, origine)
+        print("Data from Nely")
+        
         if tel_global and '1' == data['text']:
             if not phone_exists_in_sheet_nely(tel_global):
                 append_to_sheet_nely(data, lastname, firstname, utm, zipcode, type_chauffage, email)
@@ -260,78 +249,19 @@ def inbound_sms():
                     'email': email
                 }
                 print(data_publiweb, 'Nely')
-    
                 response = requests.post(url_publiweb, headers=headers_publiweb, json=data_publiweb)
-    
                 if response.status_code != 200:
                     logging.warning(f"Failed to send data to publiweb endpoint. Status code: {response.status_code}")
                 else: 
                     print('Data sent to Nely CRM successfully')
-        else:
-            logging.info(f"Phone number {tel_global} already exists in the sheet, skipping entry and POST request.")
-        
-        
+            else:
+                logging.info(f"Phone number {tel_global} already exists in the sheet, skipping entry and POST request.")
         print('Data got from Nely')
-        
     else:
         results = get_data_from_redshift_2(data['msisdn'])
-        tel_global, lastname, firstname, utm, zipcode, type_chauffage, email = (None, None, None, None, None, None, None)
         if results:
-            tel_global, lastname, firstname, utm, zipcode, type_chauffage, email = results[0]
-
-        if tel_global and '1' == data['text']:
-            if not phone_exists_in_sheet_nely(tel_global):
-                append_to_sheet_publiweb(data, lastname, firstname, utm, zipcode, type_chauffage, email)
-                data_publiweb = {
-                    'date': data['message-timestamp'],  # Utilisez une date dynamique si nécessaire
-                    'telephone': tel_global,
-                    'firstname': firstname,
-                    'lastname': lastname,
-                    'utm': utm,
-                    'zip_code': zipcode,
-                    'mode_chauffage': type_chauffage,
-                    'email': email
-                }
-                print(data_publiweb, 'Publiweb')
-
-        print('Data got from Publiweb')
-
-    ## Initialisation des variables
-    #tel_global, lastname, firstname, utm, zipcode, type_chauffage, email = (None, None, None, None, None, None, None)
-#
-    ## Traitement des données récupérées
-    #if results:
-    #    tel_global, lastname, firstname, utm, zipcode, type_chauffage, email = results[0]
-#
-    ## Envoi à l'endpoint publiweb si nécessaire
-    #if tel_global and '1' == data['text'] and data['api-key'] == 'b0dcb13a':
-    #    if not phone_exists_in_sheet_nely(tel_global):
-    #        append_to_sheet_nely(data, lastname, firstname, utm, zipcode, type_chauffage, email)
-    #        url_publiweb = 'https://automation-vt-f29dcdcf11fd.herokuapp.com/lead_pblw/aIR7DvmX9cgTO55g8di6jvLPAvGBccm'
-    #        headers_publiweb = {'Content-Type': 'application/json'}
-    #        data_publiweb = {
-    #            'date': data['message-timestamp'],  # Utilisez une date dynamique si nécessaire
-    #            'telephone': tel_global,
-    #            'firstname': firstname,
-    #            'lastname': lastname,
-    #            'utm': utm,
-    #            'zip_code': zipcode,
-    #            'mode_chauffage': type_chauffage,
-    #            'email': email
-    #        }
-    #        print(data_publiweb)
-#
-    #        response = requests.post(url_publiweb, headers=headers_publiweb, json=data_publiweb)
-#
-    #        if response.status_code != 200:
-    #            logging.warning(f"Failed to send data to publiweb endpoint. Status code: {response.status_code}")
-    #        else: 
-    #            print('Data sent to Nely CRM successfully')
-    #    else:
-    #        logging.info(f"Phone number {tel_global} already exists in the sheet, skipping entry and POST request.")
-    #elif tel_global and '1' == data['text']:
-    #    append_to_sheet_publiweb(data, lastname, firstname, utm, zipcode, type_chauffage, email)
-    #    print('Data sent to Publiweb sheet')
+            origine = "Publiweb"
+            append_to_sheet_1(data, lastname, tel_global, lastname, firstname, origine)
 
     return "Done SR !"
        
