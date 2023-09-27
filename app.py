@@ -77,7 +77,7 @@ def create_redshift_connection():
         password=password
 )
 
-def append_to_sheet_1(data, lastname, firstname, utm, zipcode, type_chauffage, email, origine):
+def append_to_sheet_1(data, lastname, firstname, origine):
     # Accédez à la feuille Google par son nom.
     sheet = client.open("Réponses - Publiweb").sheet1
 
@@ -166,7 +166,7 @@ def get_data_from_redshift_2(msisdn): #base publiweb reduite
     conn = create_redshift_connection()
     try:
         with conn.cursor() as cursor:
-            query = "SELECT tel_global, lastname, firstname, utm, zipcode, type_chauffage, email FROM base_publiweb_audit_energetique WHERE tel_global = %s"
+            query = "SELECT tel_global, lastname, firstname, utm, zipcode, type_chauffage, email FROM vw_principale_tel_mobile WHERE tel_global = %s"
             cursor.execute(query, (msisdn,))
             results = cursor.fetchall()
             return results
@@ -230,7 +230,7 @@ def inbound_sms():
     if results:
         tel_global, lastname, firstname, utm, zipcode, type_chauffage, email = results[0]
         origine = "Nely"
-        append_to_sheet_1(data, lastname, tel_global, lastname, firstname, origine)
+        append_to_sheet_1(data, lastname, firstname, origine)
         print("Data from Nely")
         
         if tel_global and '1' == data['text']:
@@ -261,7 +261,7 @@ def inbound_sms():
         results = get_data_from_redshift_2(data['msisdn'])
         if results:
             origine = "Publiweb"
-            append_to_sheet_1(data, lastname, tel_global, lastname, firstname, origine)
+            append_to_sheet_1(data, lastname, firstname, origine)
 
     return "Done SR !"
        
