@@ -83,7 +83,7 @@ def append_to_sheet_1(data, lastname, firstname, origine):
 
     # Convertissez le dictionnaire en une liste pour le garder simple
     # Vous pouvez personnaliser cet ordre selon la structure de votre feuille.
-    row = [data['msisdn'], data['text'], data['keyword'], data['message-timestamp']]
+    row = [data['msisdn'], data['text'], data['keyword'], data['message-timestamp'], lastname, firstname, origine]
     
     # Ajoutez les données à la dernière ligne
     sheet.append_row(row)
@@ -125,12 +125,6 @@ def append_to_sheet_publiweb(data, lastname, firstname, utm, zipcode, type_chauf
 def phone_exists_in_sheet_1(phone_number):
     # Obtenez toutes les données de la première colonne (index 0)
     worksheet = client.open("Réponses - Publiweb").sheet1
-    column_data = worksheet.col_values(1) # Si vous utilisez `gspread`
-    return phone_number in column_data
-
-def phone_exists_in_sheet_2(phone_number):
-    # Obtenez toutes les données de la première colonne (index 0)
-    worksheet = client.open("Réponses - Publiweb").worksheet('Route 2')
     column_data = worksheet.col_values(1) # Si vous utilisez `gspread`
     return phone_number in column_data
 
