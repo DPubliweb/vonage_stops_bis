@@ -260,10 +260,11 @@ def inbound_sms():
     else:
         results = get_data_from_redshift_2(data['msisdn'])
         if results:
-            tel_mobile, lastname, firstname, zipcode, email = results[0]
+            lastname, firstname = results[0]
             origine = "Publiweb"
             print(results, 'test')
-            append_to_sheet_1(data, results, origine)
+            append_to_sheet_1(data, lastname, firstname, origine)
+            print('printed in sheet')
 
     return "Done SR !"
        
