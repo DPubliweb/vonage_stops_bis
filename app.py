@@ -77,13 +77,13 @@ def create_redshift_connection():
         password=password
 )
 
-def append_to_sheet_1(data, lastname, firstname, origine):
+def append_to_sheet_1(data, origine): #, lastname, firstname,
     # Accédez à la feuille Google par son nom.
     sheet = client.open("Réponses - Publiweb").sheet1
 
     # Convertissez le dictionnaire en une liste pour le garder simple
     # Vous pouvez personnaliser cet ordre selon la structure de votre feuille.
-    row = [data['msisdn'], data['text'], data['keyword'], data['message-timestamp'], lastname, firstname, origine]
+    row = [data['msisdn'], data['text'], data['keyword'], data['message-timestamp'], origine] # lastname, firstname,
     
     # Ajoutez les données à la dernière ligne
     sheet.append_row(row)
@@ -252,13 +252,13 @@ def inbound_sms():
                 logging.info(f"Phone number {tel_global} already exists in the sheet, skipping entry and POST request.")
         print('Data got from Nely')
     else:
-        results = get_data_from_redshift_2(data['msisdn'])
-        if results:
-            lastname, firstname = results[0]
-            origine = "Publiweb"
-            print(results, 'test')
-            append_to_sheet_1(data, lastname, firstname, origine)
-            print('printed in sheet')
+        #results = get_data_from_redshift_2(data['msisdn'])
+        #if results:
+        #lastname, firstname = results[0]
+        origine = "Publiweb"
+        #print(results, 'test')
+        append_to_sheet_1(data)
+        print('printed in sheet')
 
     return "Done SR !"
        
