@@ -262,6 +262,7 @@ def inbound_sms():
         if results:
             tel_mobile, lastname, firstname, zipcode, email = results[0]
             origine = "Publiweb"
+            print(results, 'test')
             append_to_sheet_1(data, lastname, firstname, origine)
 
     return "Done SR !"
