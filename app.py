@@ -224,7 +224,7 @@ def inbound_sms():
     if results:
         tel_global, lastname, firstname, utm, zipcode, type_chauffage, email = results[0]
         origine = "Nely"
-        append_to_sheet_1(data, lastname, firstname, origine)
+        append_to_sheet_1(data, origine)
         print("Data from Nely")
         
         if tel_global and '1' == data['text']:
