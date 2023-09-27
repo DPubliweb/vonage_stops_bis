@@ -166,7 +166,7 @@ def get_data_from_redshift_2(msisdn): #base publiweb reduite
     conn = create_redshift_connection()
     try:
         with conn.cursor() as cursor:
-            query = "SELECT tel_mobile, lastname, firstname, zipcode, email FROM vw_principale_tel_mobile WHERE tel_global = %s"
+            query = "SELECT tel_mobile, lastname, firstname, zipcode, email FROM vw_principale_tel_mobile WHERE tel_mobile = %s"
             cursor.execute(query, (msisdn,))
             results = cursor.fetchall()
             return results
