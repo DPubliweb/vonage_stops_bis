@@ -225,7 +225,7 @@ def inbound_sms():
         tel_global, lastname, firstname, utm, zipcode, type_chauffage, email = results[0]
         origine = "Nely"
         phone_exists_in_sheet_1(tel_global)
-        append_to_sheet_1(data, origine)
+        
         print("Data from Nely")
         
         if tel_global and '1' == data['text']:
@@ -251,6 +251,7 @@ def inbound_sms():
                     print('Data sent to Nely CRM successfully')
             else:
                 logging.info(f"Phone number {tel_global} already exists in the sheet, skipping entry and POST request.")
+        append_to_sheet_1(data, origine)
         print('Data got from Nely')
     else:
         #results = get_data_from_redshift_2(data['msisdn'])
