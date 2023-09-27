@@ -224,6 +224,7 @@ def inbound_sms():
     if results:
         tel_global, lastname, firstname, utm, zipcode, type_chauffage, email = results[0]
         origine = "Nely"
+        phone_exists_in_sheet_1(tel_global)
         append_to_sheet_1(data, origine)
         print("Data from Nely")
         
@@ -257,6 +258,7 @@ def inbound_sms():
         #lastname, firstname = results[0]
         origine = "Publiweb"
         #print(results, 'test')
+        phone_exists_in_sheet_1(data['msisdn'])
         append_to_sheet_1(data, origine)
         print('printed in sheet')
 
