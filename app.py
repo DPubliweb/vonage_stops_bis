@@ -166,7 +166,7 @@ def get_data_from_redshift_2(msisdn): #base publiweb reduite
     conn = create_redshift_connection()
     try:
         with conn.cursor() as cursor:
-            query = "SELECT tel_global, lastname, firstname, utm, zipcode, type_chauffage, email FROM vw_principale_tel_mobile WHERE tel_global = %s"
+            query = "SELECT tel_mobile, lastname, firstname, utm, zipcode, email FROM vw_principale_tel_mobile WHERE tel_global = %s"
             cursor.execute(query, (msisdn,))
             results = cursor.fetchall()
             return results
@@ -260,6 +260,7 @@ def inbound_sms():
     else:
         results = get_data_from_redshift_2(data['msisdn'])
         if results:
+            tel_mobile, lastname, firstname, zipcode, email = results[0]
             origine = "Publiweb"
             append_to_sheet_1(data, lastname, firstname, origine)
 
