@@ -244,19 +244,22 @@ def inbound_sms():
             append_to_sheet_1(data, origine)
         print('Data got from Nely')
     else:
-        if 'stop' not in data['text'].lower() and '36117' not in data['text']:
-            results = get_data_from_redshift_publiweb(data['msisdn'])
-            if results:
-                lastname, firstname, email, tel_mobile, zipcode = results[0]
-                origine = "Publiweb"
-                #print(results, 'test')
-                if not phone_exists_in_sheet_1(tel_mobile):
-                    append_to_sheet_1(data, origine)
-                if tel_mobile and '1'== data['text']:
-                    if not phone_exists_in_sheet_pw(tel_mobile):
-                        append_to_sheet_publiweb(lastname, firstname, email, tel_mobile, zipcode)
-                        print('printed in sheet')
-    
+        #if 'stop' not in data['text'].lower() and '36117' not in data['text']:
+        #    results = get_data_from_redshift_publiweb(data['msisdn'])
+        #    if results:
+        #        lastname, firstname, email, tel_mobile, zipcode = results[0]
+        #        origine = "Publiweb"
+        #        #print(results, 'test')
+        #        if not phone_exists_in_sheet_1(tel_mobile):
+        #            append_to_sheet_1(data, origine)
+        #        if tel_mobile and '1'== data['text']:
+        #            if not phone_exists_in_sheet_pw(tel_mobile):
+        #                append_to_sheet_publiweb(lastname, firstname, email, tel_mobile, zipcode)
+        #                print('printed in sheet')
+        origine = "Publiweb"
+        if not phone_exists_in_sheet_1(data['msisdn']):
+                     append_to_sheet_1(data, origine)
+                     print('Printed to sheet with publiweb origin')
 
     return "Done SR !"
        
