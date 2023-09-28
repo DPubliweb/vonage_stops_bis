@@ -68,6 +68,9 @@ creds = ServiceAccountCredentials.from_json_keyfile_dict({
 
 client = gspread.authorize(creds)
 
+ROW_LIMIT = 500
+stop_data = []
+
 def create_redshift_connection():
     return psycopg2.connect(
         host='pw-cluster.cq6jh9anojbf.us-west-2.redshift.amazonaws.com',
@@ -162,21 +165,22 @@ def get_data_from_redshift_publiweb(msisdn): #base publiweb
 
 #clean_extract_leads_Nely.csv
 
-def update_s3(data):
+def update_s3():
     try:
         existing_data = s3_client.get_object(Bucket='data-vonage', Key='stop-reports.csv')['Body'].read().decode('utf-8')
-        new_data = [[data['msisdn'], data['keyword'], data['message-timestamp'][:10]]]
         csvfile = io.StringIO()
         writer = csv.writer(csvfile, delimiter=';')
         for line in csv.reader(existing_data.splitlines(), delimiter=';'):
             writer.writerow(line)
-        writer.writerows(new_data)
+        for data in stop_data:
+            writer.writerows(data)
         s3_client.put_object(Bucket='data-vonage', Key='stop-reports.csv', Body=csvfile.getvalue())
         logging.debug("Successfully wrote to S3")
     except Exception as e:
         logging.error(f"Error in update_s3: {str(e)}")
         return None
-
+    
+    stop_data.clear()
 #start_time = datetime(2023, 5, 25, 10, 5, 0, tzinfo=timezone.utc)  
 #scheduler.add_job(csv_empty, 'interval', weeks=1, next_run_time=start_time)
 #scheduler.start()
@@ -209,8 +213,12 @@ def inbound_sms():
     
     # Ajout des données à la feuille principale et mise à jour de S3
     if 'stop' in data['text'].lower() or '36117' in data['text']:
-        update_s3(data)
-    
+        stop_data.append(data)
+
+        if len(stop_data) >= ROW_LIMIT:
+            update_s3()
+            print('S3 stops actualisé')    
+
     results = get_data_from_redshift_nely(data['msisdn'])
     if results:
         tel_global, lastname, firstname, utm, zipcode, type_chauffage, email = results[0]
