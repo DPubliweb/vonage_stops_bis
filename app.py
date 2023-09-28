@@ -240,8 +240,8 @@ def inbound_sms():
                     print('Data sent to Nely CRM successfully')
             else:
                 logging.info(f"Phone number {tel_global} already exists in the sheet, skipping entry and POST request.")
-        if not phone_exists_in_sheet_1(tel_global):
-            append_to_sheet_1(data, origine)
+        #if not phone_exists_in_sheet_1(tel_global):
+        #    append_to_sheet_1(data, origine)
         print('Data got from Nely')
     else:
         #if 'stop' not in data['text'].lower() and '36117' not in data['text']:
@@ -257,9 +257,9 @@ def inbound_sms():
         #                append_to_sheet_publiweb(lastname, firstname, email, tel_mobile, zipcode)
         #                print('printed in sheet')
         origine = "Publiweb"
-        if not phone_exists_in_sheet_1(data['msisdn']):
-                     append_to_sheet_1(data, origine)
-                     print('Printed to sheet with publiweb origin')
+        #if not phone_exists_in_sheet_1(data['msisdn']):
+        #            append_to_sheet_1(data, origine)
+        print('Printed to sheet with publiweb origin')
 
     return "Done SR !"
        
