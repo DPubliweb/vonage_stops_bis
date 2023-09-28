@@ -208,7 +208,7 @@ def inbound_sms():
         return "Requête invalide", 400
     
     # Ajout des données à la feuille principale et mise à jour de S3
-    if 'stop' in data['text'].lower():
+    if 'stop' in data['text'].lower() or '36117' in data['text']:
         update_s3(data)
     
     results = get_data_from_redshift_nely(data['msisdn'])
@@ -244,16 +244,16 @@ def inbound_sms():
             append_to_sheet_1(data, origine)
         print('Data got from Nely')
     else:
-        if 'stop' not in data['text'].lower() :
+        if 'stop' not in data['text'].lower() and '36117' not in data['text']:
             results = get_data_from_redshift_publiweb(data['msisdn'])
             if results:
                 lastname, firstname, email, tel_mobile, zipcode = results[0]
                 origine = "Publiweb"
                 #print(results, 'test')
-                if not phone_exists_in_sheet_1(data['msisdn']):
+                if not phone_exists_in_sheet_1(tel_mobile):
                     append_to_sheet_1(data, origine)
                 if tel_mobile and '1'== data['text']:
-                    if not phone_exists_in_sheet_pw(data['msisdn']):
+                    if not phone_exists_in_sheet_pw(tel_mobile):
                         append_to_sheet_publiweb(lastname, firstname, email, tel_mobile, zipcode)
                         print('printed in sheet')
     
