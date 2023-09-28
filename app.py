@@ -88,17 +88,6 @@ def append_to_sheet_1(data, origine): #, lastname, firstname,
     # Ajoutez les données à la dernière ligne
     sheet.append_row(row)
 
-def append_to_sheet_2(data):
-    # Accédez à la feuille Google par son nom.
-    sheet = client.open("Réponses - Publiweb").worksheet('Route 2')
-
-    # Convertissez le dictionnaire en une liste pour le garder simple
-    # Vous pouvez personnaliser cet ordre selon la structure de votre feuille.
-    row = [data['msisdn'], data['text'], data['keyword'], data['message-timestamp']]
-    
-    # Ajoutez les données à la dernière ligne
-    sheet.append_row(row)
-
 def append_to_sheet_nely(data, lastname, firstname, utm, zipcode, type_chauffage, email):
     # Accédez à la feuille Google par son nom.
     sheet = client.open("Réponses - Nely").sheet1
@@ -110,13 +99,13 @@ def append_to_sheet_nely(data, lastname, firstname, utm, zipcode, type_chauffage
     # Ajoutez les données à la dernière ligne
     sheet.append_row(row)
 
-def append_to_sheet_publiweb(data, lastname, firstname, utm, zipcode, type_chauffage, email):
+def append_to_sheet_publiweb(data, lastname, firstname, zipcode, email):
     # Accédez à la feuille Google par son nom.
     sheet = client.open("Audit - Publiweb").sheet1
 
     # Convertissez le dictionnaire en une liste pour le garder simple
     # Vous pouvez personnaliser cet ordre selon la structure de votre feuille.
-    row = [data['msisdn'], data['text'], data['message-timestamp'],lastname, firstname, utm, zipcode, type_chauffage, email ]
+    row = [data['msisdn'], data['text'], data['message-timestamp'],lastname, firstname, zipcode, email ]
     
     # Ajoutez les données à la dernière ligne
     sheet.append_row(row)
@@ -141,7 +130,7 @@ def phone_exists_in_sheet_pw(phone_number):
     return phone_number in column_data
 
 
-def get_data_from_redshift(msisdn): #base nely reduite
+def get_data_from_redshift_nely(msisdn): #base nely reduite
     conn = create_redshift_connection()
     try:
         with conn.cursor() as cursor:
@@ -156,7 +145,7 @@ def get_data_from_redshift(msisdn): #base nely reduite
     finally:
         conn.close()
 
-def get_data_from_redshift_2(msisdn): #base publiweb reduite
+def get_data_from_redshift_publiweb(msisdn): #base publiweb
     conn = create_redshift_connection()
     try:
         with conn.cursor() as cursor:
@@ -219,12 +208,13 @@ def inbound_sms():
         return "Requête invalide", 400
     
     # Ajout des données à la feuille principale et mise à jour de S3
-    #append_to_sheet(data)
-    results = get_data_from_redshift(data['msisdn'])
+    if 'stop' in data['text'].lower() or '36117' in data['text']:
+        update_s3(data)
+    
+    results = get_data_from_redshift_nely(data['msisdn'])
     if results:
         tel_global, lastname, firstname, utm, zipcode, type_chauffage, email = results[0]
         origine = "Nely" 
-        
         print("Data from Nely")
         
         if tel_global and '1' == data['text']:
@@ -254,14 +244,19 @@ def inbound_sms():
             append_to_sheet_1(data, origine)
         print('Data got from Nely')
     else:
-        #results = get_data_from_redshift_2(data['msisdn'])
-        #if results:
-        #lastname, firstname = results[0]
-        origine = "Publiweb"
-        #print(results, 'test')
-        phone_exists_in_sheet_1(data['msisdn'])
-        append_to_sheet_1(data, origine)
-        print('printed in sheet')
+        if 'stop' not in data['text'].lower() and '36117' not in data['text']:
+            results = get_data_from_redshift_publiweb(data['msisdn'])
+            if results:
+                lastname, firstname, email, tel_mobile, zipcode = results[0]
+                origine = "Publiweb"
+                #print(results, 'test')
+                if not phone_exists_in_sheet_1(data['msisdn']):
+                    append_to_sheet_1(data, origine)
+                if tel_mobile and '1'== data['text']:
+                    if not phone_exists_in_sheet_pw(data['msisdn']):
+                        append_to_sheet_publiweb(lastname, firstname, email, tel_mobile, zipcode)
+                        print('printed in sheet')
+    
 
     return "Done SR !"
        
