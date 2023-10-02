@@ -97,10 +97,11 @@ def append_to_sheet_demarches(data, lastname, firstname, email, utm, zipcode): #
 
     # Convertissez le dictionnaire en une liste pour le garder simple
     # Vous pouvez personnaliser cet ordre selon la structure de votre feuille.
-    row = [data['msisdn'], data['text'], data['message-timestamp'],firstname, lastname, zipcode ,email, utm ] # lastname, firstname,
-    
+    row = [data['msisdn'], data['text'], data['message-timestamp'],firstname, lastname, zipcode ,email, utm ] 
     # Ajoutez les données à la dernière ligne
     sheet.append_row(row)
+    print(f"Adding row with data: {row}")
+
 
 def append_to_sheet_nely(data, lastname, firstname, utm, zipcode, type_chauffage, email):
     # Accédez à la feuille Google par son nom.
@@ -123,6 +124,7 @@ def append_to_sheet_publiweb(data, lastname, firstname, zipcode, email):
     
     # Ajoutez les données à la dernière ligne
     sheet.append_row(row)
+    
 
 
 def phone_exists_in_sheet_1(phone_number):
