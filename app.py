@@ -145,7 +145,7 @@ def phone_exists_in_sheet_pw(phone_number):
 
 def phone_exists_in_sheet_demarches(phone_number):
     # Obtenez toutes les données de la première colonne (index 0)
-    worksheet = client.open("Réponses - Démarches Administratives - Réponses 1").sheet1
+    worksheet = client.open("Démarches Administratives - Réponses 1").sheet1
     column_data = worksheet.col_values(1) # Si vous utilisez `gspread`
     return phone_number in column_data
 
