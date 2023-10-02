@@ -91,13 +91,13 @@ def append_to_sheet_1(data, origine): #, lastname, firstname,
     # Ajoutez les données à la dernière ligne
     sheet.append_row(row)
 
-def append_to_sheet_demarches(data, lastname, firstname,email, utm, zipcode): #, lastname, firstname,
+def append_to_sheet_demarches(data, lastname, firstname, email, utm, zipcode): #, lastname, firstname,
     # Accédez à la feuille Google par son nom.
     sheet = client.open("Démarches Administratives - Réponses 1").sheet1
 
     # Convertissez le dictionnaire en une liste pour le garder simple
     # Vous pouvez personnaliser cet ordre selon la structure de votre feuille.
-    row = [data['msisdn'], data['text'], data['message-timestamp'],lastname, firstname, utm, zipcode, email] # lastname, firstname,
+    row = [data['msisdn'], data['text'], data['message-timestamp'],firstname, lastname, zipcode ,email, utm ] # lastname, firstname,
     
     # Ajoutez les données à la dernière ligne
     sheet.append_row(row)
@@ -277,7 +277,7 @@ def inbound_sms():
                 #print(results, 'test')
                 if "demarches/jap" in utm:
                     if not phone_exists_in_sheet_demarches(phone):
-                        append_to_sheet_demarches(data, lastname, firstname,email, utm, zipcode)
+                        append_to_sheet_demarches(data, firstname, lastname ,email, zipcode, utm )
                 else:
                     print('not from jap')
         print('Voila')
