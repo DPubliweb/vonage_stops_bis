@@ -247,7 +247,7 @@ def inbound_sms():
         if tel_global and '1' == data['text']:
             if not phone_exists_in_sheet_nely(tel_global):
                 append_to_sheet_nely(data, lastname, firstname, utm, zipcode, type_chauffage, email)
-                url_publiweb = 'https://automation-vt-f29dcdcf11fd.herokuapp.com/lead_pblw/aIR7DvmX9cgTO55g8di6jvLPAvGBccm'
+                url_publiweb = 'https://nely-lead-creation-842a9f80ab3b.herokuapp.com/lead_pblw/aIR7DvmX9cgTO55g8di6jvLPAvGBccm'
                 headers_publiweb = {'Content-Type': 'application/json'}
                 data_publiweb = {
                     'date': data['message-timestamp'],  # Utilisez une date dynamique si nécessaire
