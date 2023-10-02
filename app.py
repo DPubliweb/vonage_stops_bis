@@ -274,7 +274,7 @@ def inbound_sms():
         if 'stop' not in data['text'].lower() and '36117' not in data['text']:
             results = get_data_from_redshift_publiweb(data['msisdn'])
             if results:
-                lastname, firstname, email, phone, zipcode, utm = results[0]
+                phone, lastname, firstname, zipcode, email, utm = results[0]
                 origine = "Publiweb"
                 #print(results, 'test')
                 if "demarches/jap" in utm:
