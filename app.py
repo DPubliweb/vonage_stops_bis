@@ -277,7 +277,7 @@ def inbound_sms():
                 phone, lastname, firstname, zipcode, email, utm = results[0]
                 origine = "Publiweb"
                 #print(results, 'test')
-                if "demarches/jap" in utm:
+                if "demarches" in utm:
                     if not phone_exists_in_sheet_demarches(phone):
                         append_to_sheet_demarches(data, firstname, lastname ,email, zipcode, utm )
                 elif utm == '04.10.23/10k/audit_energetique/pw/test':
