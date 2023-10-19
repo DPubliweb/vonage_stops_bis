@@ -280,7 +280,7 @@ def inbound_sms():
             if "demarches" in utm:
                 if not phone_exists_in_sheet_demarches(phone):
                     append_to_sheet_demarches(data, firstname, lastname ,email, zipcode, utm )
-            elif utm == '19.10.23/3800/viager/jap':
+            elif utm == "19.10.23/3800/viager/jap":
                 if not phone_exists_in_sheet_viager(phone):
                     append_to_sheet_viager(data, firstname, lastname ,email, zipcode, utm )
             elif "combles/jap" in utm:
