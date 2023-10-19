@@ -113,6 +113,16 @@ def append_to_sheet_combles(data, lastname, firstname, email, utm, zipcode): #, 
     sheet.append_row(row)
     print(f"Adding row with data: {row}")
 
+def append_to_sheet_viager(data, lastname, firstname, email, utm, zipcode): #, lastname, firstname,
+    # Accédez à la feuille Google par son nom.
+    sheet = client.open("Viager JAP - Réponses 1").sheet1
+
+    # Convertissez le dictionnaire en une liste pour le garder simple
+    # Vous pouvez personnaliser cet ordre selon la structure de votre feuille.
+    row = [data['msisdn'], data['text'], data['message-timestamp'],firstname, lastname, zipcode ,email, utm ] 
+    # Ajoutez les données à la dernière ligne
+    sheet.append_row(row)
+    print(f"Adding row with data: {row}")
 
 def append_to_sheet_nely(data, lastname, firstname, utm, zipcode, type_chauffage, email):
     # Accédez à la feuille Google par son nom.
@@ -165,6 +175,12 @@ def phone_exists_in_sheet_demarches(phone_number):
 def phone_exists_in_sheet_combles(phone_number):
     # Obtenez toutes les données de la première colonne (index 0)
     worksheet = client.open("Combles JAP - Réponses 1").sheet1
+    column_data = worksheet.col_values(1) # Si vous utilisez `gspread`
+    return phone_number in column_data
+
+def phone_exists_in_sheet_viager(phone_number):
+    # Obtenez toutes les données de la première colonne (index 0)
+    worksheet = client.open("Viager JAP - Réponses 1").sheet1
     column_data = worksheet.col_values(1) # Si vous utilisez `gspread`
     return phone_number in column_data
 
@@ -264,9 +280,9 @@ def inbound_sms():
             if "demarches" in utm:
                 if not phone_exists_in_sheet_demarches(phone):
                     append_to_sheet_demarches(data, firstname, lastname ,email, zipcode, utm )
-            elif utm == '04.10.23/10k/audit_energetique/pw/test':
-                if not phone_exists_in_sheet_pw(phone):
-                    append_to_sheet_publiweb(data, firstname, lastname ,email, zipcode, utm )
+            elif utm == '19.10.23/3800/viager/jap':
+                if not phone_exists_in_sheet_viager(phone):
+                    append_to_sheet_viager(data, firstname, lastname ,email, zipcode, utm )
             elif "combles/jap" in utm:
                 if not phone_exists_in_sheet_combles(phone):
                     append_to_sheet_combles(data, firstname, lastname ,email, zipcode, utm )
