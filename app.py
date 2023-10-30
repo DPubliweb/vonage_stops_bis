@@ -219,45 +219,24 @@ def get_data_from_redshift_publiweb(msisdn): #base publiweb
 
 def update_s3():
     try:
-        s3_client = boto3.client('s3')
         existing_data = s3_client.get_object(Bucket='data-vonage', Key='stop-reports.csv')['Body'].read().decode('utf-8')
         csvfile = io.StringIO()
         writer = csv.writer(csvfile, delimiter=';')
         desired_keys = ['column1', 'column2']
-
-        # Écrire les données existantes
         for line in csv.reader(existing_data.splitlines(), delimiter=';'):
             writer.writerow(line)
-        
-        # Vérification du contenu de stop_data
-        logging.debug(f"stop_data before writing: {stop_data}")
-
-        # Écrire les nouvelles données
         for data in stop_data:
+            # Ici, nous créons une liste des valeurs à partir du dictionnaire `data`
+            # Vous pouvez personnaliser l'ordre des champs ici si nécessaire
             row = [data.get(key, '') for key in desired_keys]
             writer.writerow(row)
-        
-        # Assurez-vous que tout est écrit dans StringIO
-        csvfile.flush()
-
-        # Écriture dans S3
-        s3_client.put_object(Bucket='data-vonage', Key='stop-reports.csv', Body=csvfile.getvalue(), ContentType='text/csv')
+        s3_client.put_object(Bucket='data-vonage', Key='stop-reports.csv', Body=csvfile.getvalue())
         logging.debug("Successfully wrote to S3")
     except Exception as e:
         logging.error(f"Error in update_s3: {str(e)}")
         return None
-    finally:
-        # Clear stop_data only if everything is successful
-        stop_data.clear()
-
-# Exemple de stop_data (Assurez-vous que cette structure est correcte et que les données sont disponibles)
-stop_data = [
-    {'column1': 'value1', 'column2': 'value2'},
-    # Plus de dictionnaires si nécessaire
-]
-
-# Appelez la fonction update_s3 pour tester
-update_s3()
+    
+    stop_data.clear()
 #start_time = datetime(2023, 5, 25, 10, 5, 0, tzinfo=timezone.utc)  
 #scheduler.add_job(csv_empty, 'interval', weeks=1, next_run_time=start_time)
 #scheduler.start()
