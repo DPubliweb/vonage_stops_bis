@@ -222,14 +222,10 @@ def update_s3():
         existing_data = s3_client.get_object(Bucket='data-vonage', Key='stop-reports.csv')['Body'].read().decode('utf-8')
         csvfile = io.StringIO()
         writer = csv.writer(csvfile, delimiter=';')
-        desired_keys = ['column1', 'column2']
         for line in csv.reader(existing_data.splitlines(), delimiter=';'):
             writer.writerow(line)
         for data in stop_data:
-            # Ici, nous créons une liste des valeurs à partir du dictionnaire `data`
-            # Vous pouvez personnaliser l'ordre des champs ici si nécessaire
-            row = [data.get(key, '') for key in desired_keys]
-            writer.writerow(row)
+            writer.writerows(data)
         s3_client.put_object(Bucket='data-vonage', Key='stop-reports.csv', Body=csvfile.getvalue())
         logging.debug("Successfully wrote to S3")
     except Exception as e:
