@@ -222,17 +222,42 @@ def update_s3():
         existing_data = s3_client.get_object(Bucket='data-vonage', Key='stop-reports.csv')['Body'].read().decode('utf-8')
         csvfile = io.StringIO()
         writer = csv.writer(csvfile, delimiter=';')
+
+        # Écrire les données existantes
         for line in csv.reader(existing_data.splitlines(), delimiter=';'):
             writer.writerow(line)
+
+        # Assurez-vous que stop_data n'est pas vide
+        if not stop_data:
+            logging.debug("No new data to write to S3.")
+            return
+
+        # Écrire les nouvelles données
         for data in stop_data:
-            writer.writerows(data)
+            # Créer une ligne avec les données du dictionnaire `data`
+            row = [data.get(key, '') for key in desired_columns]  # Remplacez avec les clés appropriées
+            writer.writerow(row)
+
+        # Retournez au début du StringIO avant de lire ou d'envoyer son contenu
+        csvfile.seek(0)
+
+        # Envoi du fichier mis à jour à S3
         s3_client.put_object(Bucket='data-vonage', Key='stop-reports.csv', Body=csvfile.getvalue())
         logging.debug("Successfully wrote to S3")
+
     except Exception as e:
         logging.error(f"Error in update_s3: {str(e)}")
         return None
-    
-    stop_data.clear()
+    finally:
+        stop_data.clear()  # Assurez-vous de nettoyer stop_data
+        csvfile.close()  # Fermez le StringIO après utilisation
+
+# En dehors de la fonction, lorsque vous appelez update_s3, vérifiez que stop_data n'est pas vide
+print(stop_data)  # Pour débogage
+if stop_data:
+    update_s3()
+else:
+    print('No data to update')
 #start_time = datetime(2023, 5, 25, 10, 5, 0, tzinfo=timezone.utc)  
 #scheduler.add_job(csv_empty, 'interval', weeks=1, next_run_time=start_time)
 #scheduler.start()
