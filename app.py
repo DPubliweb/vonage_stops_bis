@@ -68,7 +68,7 @@ creds = ServiceAccountCredentials.from_json_keyfile_dict({
 
 client = gspread.authorize(creds)
 
-ROW_LIMIT = 500
+ROW_LIMIT = 10
 stop_data = []
 
 def create_redshift_connection():
