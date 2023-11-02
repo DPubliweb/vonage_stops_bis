@@ -146,7 +146,16 @@ def append_to_sheet_publiweb(data, lastname, firstname, email, utm, zipcode):
     # Ajoutez les données à la dernière ligne
     sheet.append_row(row)
     
+def append_to_sheet_allan(data, lastname, firstname, email, utm, zipcode):
+    # Accédez à la feuille Google par son nom.
+    sheet = client.open("PV - Allan").sheet1
 
+    # Convertissez le dictionnaire en une liste pour le garder simple
+    # Vous pouvez personnaliser cet ordre selon la structure de votre feuille.
+    row = [data['msisdn'], data['text'], data['message-timestamp'],firstname, lastname, zipcode ,email, utm ]
+    
+    # Ajoutez les données à la dernière ligne
+    sheet.append_row(row)
 
 def phone_exists_in_sheet_1(phone_number):
     # Obtenez toutes les données de la première colonne (index 0)
@@ -305,7 +314,9 @@ def inbound_sms():
             phone, lastname, firstname, zipcode, email, utm = results[0]
             origine = "Publiweb"
             #print(results, 'test')
-            if "demarches" in utm:
+            if utm == '02.11.23/10k/ps/allanSultan':
+                append_to_sheet_allan(data, firstname, lastname ,email, zipcode, utm )
+            elif "demarches" in utm:
                 if not phone_exists_in_sheet_demarches(phone):
                     append_to_sheet_demarches(data, firstname, lastname ,email, zipcode, utm )
             elif utm == "19.10.23/3800/viager/jap":
