@@ -157,6 +157,17 @@ def append_to_sheet_allan(data, lastname, firstname, email, utm, zipcode):
     # Ajoutez les données à la dernière ligne
     sheet.append_row(row)
 
+def append_to_sheet_ornella(data, lastname, firstname, email, utm, zipcode):
+    # Accédez à la feuille Google par son nom.
+    sheet = client.open("Ornella Voyance - Réponses 1").sheet1
+
+    # Convertissez le dictionnaire en une liste pour le garder simple
+    # Vous pouvez personnaliser cet ordre selon la structure de votre feuille.
+    row = [data['msisdn'], data['text'], data['message-timestamp'],firstname, lastname, zipcode ,email, utm ]
+    
+    # Ajoutez les données à la dernière ligne
+    sheet.append_row(row)
+
 def phone_exists_in_sheet_1(phone_number):
     # Obtenez toutes les données de la première colonne (index 0)
     worksheet = client.open("Réponses - Publiweb").sheet1
@@ -190,6 +201,12 @@ def phone_exists_in_sheet_combles(phone_number):
 def phone_exists_in_sheet_viager(phone_number):
     # Obtenez toutes les données de la première colonne (index 0)
     worksheet = client.open("Viager JAP - Réponses 1").sheet1
+    column_data = worksheet.col_values(1) # Si vous utilisez `gspread`
+    return phone_number in column_data
+
+def phone_exist_in_sheet_ornella(phone_number):
+    # Obtenez toutes les données de la première colonne (index 0)
+    worksheet = client.open("Ornella Voyance - Réponses 1").sheet1
     column_data = worksheet.col_values(1) # Si vous utilisez `gspread`
     return phone_number in column_data
 
@@ -316,6 +333,9 @@ def inbound_sms():
             #print(results, 'test')
             if utm == '02.11.23/10k/ps/allanSultan':
                 append_to_sheet_allan(data, firstname, lastname ,email, zipcode, utm )
+            elif "ornella" in utm:
+                if not phone_exist_in_sheet_ornella(phone):
+                    append_to_sheet_ornella(data, firstname, lastname, email, zipcode, utm)
             elif "demarches" in utm:
                 if not phone_exists_in_sheet_demarches(phone):
                     append_to_sheet_demarches(data, firstname, lastname ,email, zipcode, utm )
@@ -354,70 +374,6 @@ def inbound_sms():
                      #if not phone_exists_in_sheet_1(tel_global):
                      #    append_to_sheet_1(data, origine)
                      print('Data got from Nely ')
-            elif utm == '17.10.23/44k/audit/idc/m3':
-                results = get_data_from_redshift_nely(data['msisdn'])
-                if results:
-                     tel_global, lastname, firstname, utm, zipcode, type_chauffage, email = results[0]
-                     origine = "Nely"
-                     print("Data from Nely")
-                     if tel_global and '1' == data['text']:
-                         if not phone_exists_in_sheet_nely(tel_global):
-                             append_to_sheet_nely(data, lastname, firstname, utm, zipcode, type_chauffage, email)
-                             url_publiweb = 'https://nely-lead-creation-842a9f80ab3b.herokuapp.com/lead_pblw/aIR7DvmX9cgTO55g8di6jvLPAvGBccm'
-                             headers_publiweb = {'Content-Type': 'application/json'}
-                             data_publiweb = {
-                                 'date': data['message-timestamp'],  # Utilisez une date dynamique si nécessaire
-                                 'telephone': tel_global,
-                                 'firstname': firstname,
-                                 'lastname': lastname,
-                                 'utm': utm,
-                                 'zip_code': zipcode,
-                                 'mode_chauffage': type_chauffage,
-                                 'email': email
-                             }
-                             print(data_publiweb, 'Nely')
-                             response = requests.post(url_publiweb, headers=headers_publiweb, json=data_publiweb)
-                             if response.status_code != 200:
-                                 logging.warning(f"Failed to send data to publiweb endpoint. Status code: {response.status_code}")
-                             else:
-                                 print('Data sent to Nely CRM successfully')
-                         else:
-                             logging.info(f"Phone number {tel_global} already exists in the sheet, skipping entry and POST request.")
-                     #if not phone_exists_in_sheet_1(tel_global):
-                     #    append_to_sheet_1(data, origine)
-                     print('Data got from Nely ')
-            elif utm == '18.10.23/100k/audit/idc/m3':
-                    results = get_data_from_redshift_nely(data['msisdn'])
-                    if results:
-                         tel_global, lastname, firstname, utm, zipcode, type_chauffage, email = results[0]
-                         origine = "Nely"
-                         print("Data from Nely")
-                         if tel_global and '1' == data['text']:
-                             if not phone_exists_in_sheet_nely(tel_global):
-                                 append_to_sheet_nely(data, lastname, firstname, utm, zipcode, type_chauffage, email)
-                                 url_publiweb = 'https://nely-lead-creation-842a9f80ab3b.herokuapp.com/lead_pblw/aIR7DvmX9cgTO55g8di6jvLPAvGBccm'
-                                 headers_publiweb = {'Content-Type': 'application/json'}
-                                 data_publiweb = {
-                                     'date': data['message-timestamp'],  # Utilisez une date dynamique si nécessaire
-                                     'telephone': tel_global,
-                                     'firstname': firstname,
-                                     'lastname': lastname,
-                                     'utm': utm,
-                                     'zip_code': zipcode,
-                                     'mode_chauffage': type_chauffage,
-                                     'email': email
-                                 }
-                                 print(data_publiweb, 'Nely')
-                                 response = requests.post(url_publiweb, headers=headers_publiweb, json=data_publiweb)
-                                 if response.status_code != 200:
-                                     logging.warning(f"Failed to send data to publiweb endpoint. Status code: {response.status_code}")
-                                 else:
-                                     print('Data sent to Nely CRM successfully')
-                             else:
-                                 logging.info(f"Phone number {tel_global} already exists in the sheet, skipping entry and POST request.")
-                         #if not phone_exists_in_sheet_1(tel_global):
-                         #    append_to_sheet_1(data, origine)
-                         print('Data got from Nely ')
         else:
             results = get_data_from_redshift_nely(data['msisdn'])
             if results:
