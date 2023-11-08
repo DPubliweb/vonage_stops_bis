@@ -230,7 +230,7 @@ def get_data_from_redshift_publiweb(msisdn): #base publiweb
     conn = create_redshift_connection()
     try:
         with conn.cursor() as cursor:
-            query = "SELECT phone, lastname, firstname, zipcode, email,cohort, utm FROM fact_histo_details WHERE phone = %s"
+            query = "SELECT phone, lastname, firstname, zipcode, email, utm FROM fact_histo_details WHERE phone = %s"
             cursor.execute(query, (msisdn,))
             results = cursor.fetchall()
             return results
