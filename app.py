@@ -331,9 +331,7 @@ def inbound_sms():
             phone, lastname, firstname, zipcode, email, utm = results[0]
             origine = "Publiweb"
             #print(results, 'test')
-            if utm == '02.11.23/10k/ps/allanSultan':
-                append_to_sheet_allan(data, firstname, lastname ,email, zipcode, utm )
-            elif utm == '08.11.23/4k/voyance/ornella/tcsprur':
+            if utm == '08.11.23/4k/voyance/ornella/tcsprur':
                 if not phone_exist_in_sheet_ornella(phone):
                     append_to_sheet_ornella(data, firstname, lastname, email, zipcode, utm)
             elif "demarches" in utm:
