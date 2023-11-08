@@ -157,13 +157,13 @@ def append_to_sheet_allan(data, lastname, firstname, email, utm, zipcode):
     # Ajoutez les données à la dernière ligne
     sheet.append_row(row)
 
-def append_to_sheet_ornella(data, lastname, firstname, email, utm, zipcode):
+def append_to_sheet_ornella(data, lastname, firstname, email, utm, cohort):
     # Accédez à la feuille Google par son nom.
     sheet = client.open("Ornella Voyance - Réponses 1").sheet1
 
     # Convertissez le dictionnaire en une liste pour le garder simple
     # Vous pouvez personnaliser cet ordre selon la structure de votre feuille.
-    row = [data['msisdn'], data['text'], data['message-timestamp'],firstname, lastname, zipcode ,email, utm ]
+    row = [data['msisdn'], data['text'], data['message-timestamp'],firstname, lastname ,email, utm, cohort ]
     
     # Ajoutez les données à la dernière ligne
     sheet.append_row(row)
@@ -230,7 +230,7 @@ def get_data_from_redshift_publiweb(msisdn): #base publiweb
     conn = create_redshift_connection()
     try:
         with conn.cursor() as cursor:
-            query = "SELECT phone, lastname, firstname, zipcode, email, utm FROM fact_histo_details WHERE phone = %s"
+            query = "SELECT phone, lastname, firstname, zipcode, email,cohort, utm FROM fact_histo_details WHERE phone = %s"
             cursor.execute(query, (msisdn,))
             results = cursor.fetchall()
             return results
@@ -328,14 +328,14 @@ def inbound_sms():
     if 'stop' not in data['text'].lower() and '36117' not in data['text']:
         results = get_data_from_redshift_publiweb(data['msisdn'])
         if results:
-            phone, lastname, firstname, zipcode, email, utm = results[0]
+            phone, lastname, firstname, zipcode, email, utm, cohort = results[0]
             origine = "Publiweb"
             #print(results, 'test')
             if utm == '02.11.23/10k/ps/allanSultan':
                 append_to_sheet_allan(data, firstname, lastname ,email, zipcode, utm )
             elif "ornella" in utm:
                 if not phone_exist_in_sheet_ornella(phone):
-                    append_to_sheet_ornella(data, firstname, lastname, email, zipcode, utm)
+                    append_to_sheet_ornella(data, firstname, lastname, email, cohort, utm)
             elif "demarches" in utm:
                 if not phone_exists_in_sheet_demarches(phone):
                     append_to_sheet_demarches(data, firstname, lastname ,email, zipcode, utm )
