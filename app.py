@@ -329,7 +329,6 @@ def inbound_sms():
         results = get_data_from_redshift_publiweb(data['msisdn'])
         if results:
             phone, lastname, firstname, zipcode, email, utm = results[0]
-            origine = "Publiweb"
             #print(results, 'test')
             if utm == '02.11.23/10k/ps/allanSultan':
                 append_to_sheet_allan(data, firstname, lastname ,email, zipcode, utm )
