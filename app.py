@@ -333,7 +333,7 @@ def inbound_sms():
             #print(results, 'test')
             if utm == '02.11.23/10k/ps/allanSultan':
                 append_to_sheet_allan(data, firstname, lastname ,email, zipcode, utm )
-            elif "ornella" in utm:
+            elif utm == '08.11.23/4k/voyance/ornella/tcsprur':
                 if not phone_exist_in_sheet_ornella(phone):
                     append_to_sheet_ornella(data, firstname, lastname, email, zipcode, utm)
             elif "demarches" in utm:
