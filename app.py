@@ -180,6 +180,18 @@ def append_to_sheet_jo(data, lastname, firstname, email, utm, zipcode):
     sheet.append_row(row)
 
 
+def append_to_sheet_globalhabitat(data, lastname, firstname, email, utm, zipcode):
+    # Accédez à la feuille Google par son nom.
+    sheet = client.open("Globalhabitat - Réponses 1").sheet1
+
+    # Convertissez le dictionnaire en une liste pour le garder simple
+    # Vous pouvez personnaliser cet ordre selon la structure de votre feuille.
+    row = [data['msisdn'], data['text'], data['message-timestamp'],firstname, lastname, zipcode ,email, utm ]
+    
+    # Ajoutez les données à la dernière ligne
+    sheet.append_row(row)
+
+
 def phone_exists_in_sheet_1(phone_number):
     # Obtenez toutes les données de la première colonne (index 0)
     worksheet = client.open("Réponses - Publiweb").sheet1
@@ -228,6 +240,11 @@ def phone_exist_in_sheet_jo(phone_number):
     column_data = worksheet.col_values(1) # Si vous utilisez `gspread`
     return phone_number in column_data
 
+def phone_exist_in_sheet_globalhabitat(phone_number):
+    # Obtenez toutes les données de la première colonne (index 0)
+    worksheet = client.open("Globalhabitat - Réponses 1").sheet1
+    column_data = worksheet.col_values(1) # Si vous utilisez `gspread`
+    return phone_number in column_data
 
 
 
@@ -352,9 +369,9 @@ def inbound_sms():
             phone, lastname, firstname, zipcode, email, utm = results[0]
             origine = "Publiweb"
             #print(results, 'test')
-            if utm == '08.11.23/4k/voyance/ornella/tcsprur':
-                if not phone_exist_in_sheet_ornella(phone):
-                    append_to_sheet_ornella(data, firstname, lastname, email, zipcode, utm)
+            if 'globalhabitat' in utm :
+                if not phone_exist_in_sheet_globalhabitat(phone):
+                    append_to_sheet_globalhabitat(data, firstname, lastname, email, zipcode, utm)
             elif utm == '08.11.23/offresemploijo/20k/jap':
                 if not phone_exist_in_sheet_jo(phone):
                     append_to_sheet_jo(data, firstname, lastname, email, zipcode, utm)
