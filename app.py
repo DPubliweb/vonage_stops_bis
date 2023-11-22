@@ -420,7 +420,7 @@ def inbound_sms():
            elif "combles/publiweb" in utm:
                 if not phone_exists_in_sheet_combles_publiweb(phone):
                     append_to_sheet_combles_publiweb(data, firstname, lastname ,email, zipcode, utm )
-            elif "combles/jap" in utm:
+           elif "combles/jap" in utm:
                 if not phone_exists_in_sheet_combles(phone):
                     append_to_sheet_combles(data, firstname, lastname ,email, zipcode, utm )
             
