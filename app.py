@@ -5,6 +5,7 @@ import os
 import csv
 import io
 import boto3
+import nexmo
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import requests
@@ -67,6 +68,11 @@ creds = ServiceAccountCredentials.from_json_keyfile_dict({
 }, scope)
 
 client = gspread.authorize(creds)
+
+
+client_vonage = nexmo.Client(
+    key=KEY_VONAGE, secret=KEY_VONAGE_SECRET
+)
 
 ROW_LIMIT = 10
 stop_data = []
@@ -408,6 +414,17 @@ def inbound_sms():
             if 'pv/publiweb' in utm :
                 if not phone_exist_in_sheet_1(phone):
                     append_to_sheet_1(data, firstname, lastname, email, zipcode, utm)
+                    try:
+                        response = client_vonage.send_message({'from': 'CONF RDV', 'to': phone , 'text': 'Bonjour '+ firstname +' '+lastname+'\nMerci pour votre demande\nUn conseiller vous recontactera sous 24h à 48h'})
+                        print("Réponse de Vonage:", response)  # Log pour la réponse de Vonage
+                
+                        if response['messages'][0]['status'] != '0':
+                            print("Erreur lors de l'envoi du message:", response['messages'][0]['error-text'])
+
+                        return "Enregistrement réussi!"
+                    except Exception as e:
+                        print("Erreur lors de l'envoi du message via Vonage:", e)
+                        return str(e)
             elif utm == '08.11.23/offresemploijo/20k/jap':
                 if not phone_exist_in_sheet_jo(phone):
                     append_to_sheet_jo(data, firstname, lastname, email, zipcode, utm)
