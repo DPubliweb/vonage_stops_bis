@@ -414,7 +414,7 @@ def inbound_sms():
             utm = utm or ""
             origine = "Publiweb"
             #print(results, 'test')
-            if 'pv/publiweb' in utm :
+            if 'ps/publiweb' in utm :
                 if not phone_exist_in_sheet_1(phone):
                     append_to_sheet_1(data, firstname, lastname, email, zipcode, utm)
                     if "1" in text:
