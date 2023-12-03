@@ -189,9 +189,9 @@ def append_to_sheet_allan(data, lastname, firstname, email, utm, zipcode):
     # Ajoutez les données à la dernière ligne
     sheet.append_row(row)
 
-def append_to_sheet_ornella(data, lastname, firstname, email, utm, zipcode):
+def append_to_sheet_bm_action(data, lastname, firstname, email, utm, zipcode):
     # Accédez à la feuille Google par son nom.
-    sheet = client.open("Ornella Voyance - Réponses 1").sheet1
+    sheet = client.open("BM ACTION - Réponses 1").sheet1
 
     # Convertissez le dictionnaire en une liste pour le garder simple
     # Vous pouvez personnaliser cet ordre selon la structure de votre feuille.
@@ -272,9 +272,9 @@ def phone_exists_in_sheet_viager(phone_number):
     column_data = worksheet.col_values(1) # Si vous utilisez `gspread`
     return phone_number in column_data
 
-def phone_exist_in_sheet_ornella(phone_number):
+def phone_exist_in_sheet_bm_action(phone_number):
     # Obtenez toutes les données de la première colonne (index 0)
-    worksheet = client.open("Ornella Voyance - Réponses 1").sheet1
+    worksheet = client.open("BM ACTION - Réponses 1").sheet1
     column_data = worksheet.col_values(1) # Si vous utilisez `gspread`
     return phone_number in column_data
 
@@ -431,9 +431,9 @@ def inbound_sms():
                             return str(e)
                     else:
                         print(" No 1 in text")
-            elif utm == '08.11.23/offresemploijo/20k/jap':
-                if not phone_exist_in_sheet_jo(phone):
-                    append_to_sheet_jo(data, firstname, lastname, email, zipcode, utm)
+            elif 'bmaction' in utm:
+                if not phone_exist_in_sheet_bm_action(phone):
+                    append_to_sheet_bm_action(data, firstname, lastname, email, zipcode, utm)
             elif  "nathan" in utm :
                 if not phone_exists_in_sheet_nathan(phone):
                     append_to_sheet_nathan(data, firstname, lastname, email, zipcode, utm)
