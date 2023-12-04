@@ -414,24 +414,7 @@ def inbound_sms():
             utm = utm or ""
             origine = "Publiweb"
             #print(results, 'test')
-            if 'ps/publiweb' in utm :
-                if not phone_exists_in_sheet_1(phone):
-                    append_to_sheet_1(data, firstname, lastname, email, zipcode, utm)
-                    if "1" in text:
-                        try:
-                            response = client_vonage.send_message({'from': 'CONF RDV', 'to': phone , 'text': 'Bonjour '+ firstname +' '+lastname+'\nMerci pour votre demande\nUn conseiller vous recontactera sous 24h à 48h'})
-                            print("Réponse de Vonage:", response)  # Log pour la réponse de Vonage
-                
-                            if response['messages'][0]['status'] != '0':
-                                print("Erreur lors de l'envoi du message:", response['messages'][0]['error-text'])
-
-                            return "Enregistrement réussi!"
-                        except Exception as e:
-                            print("Erreur lors de l'envoi du message via Vonage:", e)
-                            return str(e)
-                    else:
-                        print(" No 1 in text")
-            elif 'bmaction' in utm:
+            if 'bmaction' in utm:
                 if not phone_exist_in_sheet_bm_action(phone):
                     append_to_sheet_bm_action(data, firstname, lastname, email, zipcode, utm)
             elif  "nathan" in utm :
