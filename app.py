@@ -370,7 +370,7 @@ else:
 #scheduler.add_job(csv_empty, 'interval', weeks=1, next_run_time=start_time)
 #scheduler.start()
 
-desired_columns = ['msisdn', 'text', 'keyword','message-timestamp','api-key']  # Remplacez avec les noms de colonnes réels
+desired_columns = ['msisdn', 'text','message-timestamp']  # Remplacez avec les noms de colonnes réels
 
 
 import requests
