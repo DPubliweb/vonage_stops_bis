@@ -229,7 +229,7 @@ def append_to_sheet_eclairages(data, lastname, firstname, email, utm, zipcode):
 
     # Convertissez le dictionnaire en une liste pour le garder simple
     # Vous pouvez personnaliser cet ordre selon la structure de votre feuille.
-    row = [data['msisdn'], data['text'], data['message-timestamp'], lastname, zipcode ,email, utm ]
+    row = [data['msisdn'], data['text'], data['message-timestamp'], lastname, firstname, zipcode ,email, utm ]
     
     # Ajoutez les données à la dernière ligne
     sheet.append_row(row)
