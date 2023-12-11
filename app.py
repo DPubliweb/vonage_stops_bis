@@ -223,6 +223,17 @@ def append_to_sheet_globalhabitat(data, lastname, firstname, email, utm, zipcode
     # Ajoutez les données à la dernière ligne
     sheet.append_row(row)
 
+def append_to_sheet_eclairages(data, lastname, firstname, email, utm, zipcode):
+    # Accédez à la feuille Google par son nom.
+    sheet = client.open("Éclairages - Réponses 1").sheet1
+
+    # Convertissez le dictionnaire en une liste pour le garder simple
+    # Vous pouvez personnaliser cet ordre selon la structure de votre feuille.
+    row = [data['msisdn'], data['text'], data['message-timestamp'], lastname, zipcode ,email, utm ]
+    
+    # Ajoutez les données à la dernière ligne
+    sheet.append_row(row)
+
 
 def phone_exists_in_sheet_1(phone_number):
     # Obtenez toutes les données de la première colonne (index 0)
@@ -287,6 +298,12 @@ def phone_exist_in_sheet_jo(phone_number):
 def phone_exist_in_sheet_globalhabitat(phone_number):
     # Obtenez toutes les données de la première colonne (index 0)
     worksheet = client.open("Globalhabitat - Réponses 1").sheet1
+    column_data = worksheet.col_values(1) # Si vous utilisez `gspread`
+    return phone_number in column_data
+
+def phone_exists_in_sheet_eclairages(phone_number):
+    # Obtenez toutes les données de la première colonne (index 0)
+    worksheet = client.open("Éclairages - Réponses 1").sheet1
     column_data = worksheet.col_values(1) # Si vous utilisez `gspread`
     return phone_number in column_data
 
@@ -370,7 +387,7 @@ else:
 #scheduler.add_job(csv_empty, 'interval', weeks=1, next_run_time=start_time)
 #scheduler.start()
 
-desired_columns = ['msisdn', 'text', 'keyword','message-timestamp','api-key']  # Remplacez avec les noms de colonnes réels
+desired_columns = ['msisdn', 'text','message-timestamp']  # Remplacez avec les noms de colonnes réels
 
 
 import requests
@@ -414,38 +431,24 @@ def inbound_sms():
             utm = utm or ""
             origine = "Publiweb"
             #print(results, 'test')
-            if 'ps/publiweb' in utm :
-                if not phone_exists_in_sheet_1(phone):
-                    append_to_sheet_1(data, firstname, lastname, email, zipcode, utm)
-                    if "1" in text:
-                        try:
-                            response = client_vonage.send_message({'from': 'CONF RDV', 'to': phone , 'text': 'Bonjour '+ firstname +' '+lastname+'\nMerci pour votre demande\nUn conseiller vous recontactera sous 24h à 48h'})
-                            print("Réponse de Vonage:", response)  # Log pour la réponse de Vonage
-                
-                            if response['messages'][0]['status'] != '0':
-                                print("Erreur lors de l'envoi du message:", response['messages'][0]['error-text'])
-
-                            return "Enregistrement réussi!"
-                        except Exception as e:
-                            print("Erreur lors de l'envoi du message via Vonage:", e)
-                            return str(e)
-                    else:
-                        print(" No 1 in text")
-            elif 'bmaction' in utm:
+            if 'bmaction' in utm:
                 if not phone_exist_in_sheet_bm_action(phone):
                     append_to_sheet_bm_action(data, firstname, lastname, email, zipcode, utm)
             elif  "nathan" in utm :
                 if not phone_exists_in_sheet_nathan(phone):
                     append_to_sheet_nathan(data, firstname, lastname, email, zipcode, utm)
+            elif  "eclairages" in utm :
+                if not phone_exists_in_sheet_eclairages(phone):
+                    append_to_sheet_eclairages(data, firstname, lastname, email, zipcode, utm)
             elif "demarches" in utm:
                 if not phone_exists_in_sheet_demarches(phone):
                     append_to_sheet_demarches(data, firstname, lastname ,email, zipcode, utm )
             elif "combles/publiweb" in utm:
                 if not phone_exists_in_sheet_combles_publiweb(phone):
                     append_to_sheet_combles_publiweb(data, firstname, lastname ,email, zipcode, utm )
-            elif "combles/jap" in utm:
-                if not phone_exists_in_sheet_combles(phone):
-                    append_to_sheet_combles(data, firstname, lastname ,email, zipcode, utm )
+            #elif "combles/jap" in utm:
+            #    if not phone_exists_in_sheet_combles(phone):
+            #        append_to_sheet_combles(data, firstname, lastname ,email, zipcode, utm )
             
         else:
             results = get_data_from_redshift_nely(data['msisdn'])
@@ -485,3 +488,4 @@ def inbound_sms():
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0',port=8080,debug=True)
+
