@@ -234,6 +234,17 @@ def append_to_sheet_eclairages(data, lastname, firstname, email, utm, zipcode):
     # Ajoutez les données à la dernière ligne
     sheet.append_row(row)
 
+def append_to_sheet_serenilife(data, lastname, firstname, email, utm, zipcode):
+    # Accédez à la feuille Google par son nom.
+    sheet = client.open("Serenilife - Réponses 1").sheet1
+
+    # Convertissez le dictionnaire en une liste pour le garder simple
+    # Vous pouvez personnaliser cet ordre selon la structure de votre feuille.
+    row = [data['msisdn'], data['text'], data['message-timestamp'], lastname, firstname, zipcode ,email, utm ]
+    
+    # Ajoutez les données à la dernière ligne
+    sheet.append_row(row)
+
 
 def phone_exists_in_sheet_1(phone_number):
     # Obtenez toutes les données de la première colonne (index 0)
@@ -304,6 +315,12 @@ def phone_exist_in_sheet_globalhabitat(phone_number):
 def phone_exists_in_sheet_eclairages(phone_number):
     # Obtenez toutes les données de la première colonne (index 0)
     worksheet = client.open("Éclairages - Réponses 1").sheet1
+    column_data = worksheet.col_values(1) # Si vous utilisez `gspread`
+    return phone_number in column_data
+
+def phone_exists_in_sheet_serenilife(phone_number):
+    # Obtenez toutes les données de la première colonne (index 0)
+    worksheet = client.open("Serenilife - Réponses 1").sheet1
     column_data = worksheet.col_values(1) # Si vous utilisez `gspread`
     return phone_number in column_data
 
@@ -437,6 +454,9 @@ def inbound_sms():
             elif  "nathan" in utm :
                 if not phone_exists_in_sheet_nathan(phone):
                     append_to_sheet_nathan(data, firstname, lastname, email, zipcode, utm)
+            elif  "serenilife" in utm :
+                if not phone_exists_in_sheet_serenilife(phone):
+                    append_to_sheet_serenilife(data, firstname, lastname, email, zipcode, utm)
             elif  "eclairages" in utm :
                 if not phone_exists_in_sheet_eclairages(phone):
                     append_to_sheet_eclairages(data, firstname, lastname, email, zipcode, utm)
