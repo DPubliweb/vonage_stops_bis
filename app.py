@@ -457,7 +457,7 @@ def inbound_sms():
             elif  "serenilife" in utm :
                 if not phone_exists_in_sheet_serenilife(phone):
                     append_to_sheet_serenilife(data, firstname, lastname, email, zipcode, utm)
-            elif  "eclairages" in utm :
+            elif  "ECLAIRAGES-LED" in utm :
                 if not phone_exists_in_sheet_eclairages(phone):
                     append_to_sheet_eclairages(data, firstname, lastname, email, zipcode, utm)
             elif "demarches" in utm:
