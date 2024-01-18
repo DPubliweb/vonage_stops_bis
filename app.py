@@ -102,7 +102,7 @@ def append_to_sheet_1(data, origine): #, lastname, firstname,
 
 def append_to_sheet_demarches(data, lastname, firstname, email, utm, zipcode): #, lastname, firstname,
     # Accédez à la feuille Google par son nom.
-    sheet = client.open("Démarches Administratives - Réponses 1").sheet1
+    sheet = client.open("Démarches Administratives NEW - Réponses 1").sheet1
 
     # Convertissez le dictionnaire en une liste pour le garder simple
     # Vous pouvez personnaliser cet ordre selon la structure de votre feuille.
@@ -278,7 +278,7 @@ def phone_exists_in_sheet_combles_publiweb(phone_number):
 
 def phone_exists_in_sheet_demarches(phone_number):
     # Obtenez toutes les données de la première colonne (index 0)
-    worksheet = client.open("Démarches Administratives - Réponses 1").sheet1
+    worksheet = client.open("Démarches Administratives NEW - Réponses 1").sheet1
     column_data = worksheet.col_values(1) # Si vous utilisez `gspread`
     return phone_number in column_data
 
@@ -451,6 +451,9 @@ def inbound_sms():
             if 'bmaction' in utm:
                 if not phone_exist_in_sheet_bm_action(phone):
                     append_to_sheet_bm_action(data, lastname, email, zipcode, utm)
+            elif "DEMARCHES-ADMINISTRATIVES" in utm:
+                if not phone_exists_in_sheet_demarches(phone):
+                    append_to_sheet_demarches(data, firstname, lastname ,email, zipcode, utm )
             elif  "nathan" in utm :
                 if not phone_exists_in_sheet_nathan(phone):
                     append_to_sheet_nathan(data, firstname, lastname, email, zipcode, utm)
@@ -460,9 +463,6 @@ def inbound_sms():
             elif  "ECLAIRAGES-LED" in utm :
                 if not phone_exists_in_sheet_eclairages(phone):
                     append_to_sheet_eclairages(data, firstname, lastname, email, zipcode, utm)
-            elif "demarches" in utm:
-                if not phone_exists_in_sheet_demarches(phone):
-                    append_to_sheet_demarches(data, firstname, lastname ,email, zipcode, utm )
             elif "combles/publiweb" in utm:
                 if not phone_exists_in_sheet_combles_publiweb(phone):
                     append_to_sheet_combles_publiweb(data, firstname, lastname ,email, zipcode, utm )
