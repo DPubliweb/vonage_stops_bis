@@ -189,9 +189,9 @@ def append_to_sheet_allan(data, lastname, firstname, email, utm, zipcode):
     # Ajoutez les données à la dernière ligne
     sheet.append_row(row)
 
-def append_to_sheet_bm_action(data, lastname, firstname, email, utm, zipcode):
+def append_to_sheet_anr_consulting(data, lastname, firstname, email, utm, zipcode):
     # Accédez à la feuille Google par son nom.
-    sheet = client.open("BM ACTION - Réponses 1").sheet1
+    sheet = client.open("ANR CONSULTING - Réponses 1").sheet1
 
     # Convertissez le dictionnaire en une liste pour le garder simple
     # Vous pouvez personnaliser cet ordre selon la structure de votre feuille.
@@ -294,9 +294,9 @@ def phone_exists_in_sheet_viager(phone_number):
     column_data = worksheet.col_values(1) # Si vous utilisez `gspread`
     return phone_number in column_data
 
-def phone_exist_in_sheet_bm_action(phone_number):
+def phone_exist_in_sheet_anr_consulting(phone_number):
     # Obtenez toutes les données de la première colonne (index 0)
-    worksheet = client.open("BM ACTION - Réponses 1").sheet1
+    worksheet = client.open("ANR CONSULTING - Réponses 1").sheet1
     column_data = worksheet.col_values(1) # Si vous utilisez `gspread`
     return phone_number in column_data
 
@@ -448,9 +448,9 @@ def inbound_sms():
             utm = utm or ""
             origine = "Publiweb"
             #print(results, 'test')
-            if 'bmaction' in utm:
-                if not phone_exist_in_sheet_bm_action(phone):
-                    append_to_sheet_bm_action(data, lastname, email, zipcode, utm)
+            if 'anr-consulting' in utm:
+                if not phone_exist_in_sheet_anr_consulting(phone):
+                    append_to_sheet_anr_consulting(data, lastname, email, zipcode, utm)
             elif "DEMARCHES-ADMINISTRATIVES" in utm:
                 if not phone_exists_in_sheet_demarches(phone):
                     append_to_sheet_demarches(data, firstname, lastname ,email, zipcode, utm )
