@@ -466,7 +466,7 @@ def inbound_sms():
             utm = utm or ""
             origine = "Publiweb"
             #print(results, 'test')
-            if 'bmaction' in utm:
+            if 'BMACTION' in utm:
                 if not phone_exist_in_sheet_bm_action(phone):
                     append_to_sheet_bm_action(data, lastname, email, zipcode, utm)
             elif 'anr-consulting' in utm:
