@@ -468,7 +468,7 @@ def inbound_sms():
             #print(results, 'test')
             if 'BMACTION' in utm:
                 if not phone_exist_in_sheet_bm_action(phone):
-                    append_to_sheet_bm_action(data, lastname, email, zipcode, utm)
+                    append_to_sheet_bm_action(data, firstname, lastname, email, zipcode, utm)
             elif 'anr-consulting' in utm:
                 if not phone_exist_in_sheet_anr_consulting(phone):
                     append_to_sheet_anr_consulting(data, lastname, email, zipcode, utm)
