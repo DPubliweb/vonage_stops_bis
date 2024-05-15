@@ -280,6 +280,25 @@ def append_to_sheet_agyci(data, lastname, firstname, email, utm, zipcode):
     sheet.append_row(row)
 
 
+def append_to_sheet_eyal(data, lastname, firstname, email, utm, zipcode):
+    # Accédez à la feuille Google par son nom.
+    sheet = client.open("Eyal - Réponses 1").sheet1
+
+    # Convertissez le dictionnaire en une liste pour le garder simple
+    # Vous pouvez personnaliser cet ordre selon la structure de votre feuille.
+    row = [data['msisdn'], data['text'], data['message-timestamp'], lastname, firstname, zipcode ,email, utm ]
+    
+    # Ajoutez les données à la dernière ligne
+    sheet.append_row(row)
+
+
+
+def phone_exists_in_sheet_eyal(phone_number):
+    # Obtenez toutes les données de la première colonne (index 0)
+    worksheet = client.open("Eyal - Réponses 1").sheet1
+    column_data = worksheet.col_values(1) # Si vous utilisez `gspread`
+    return phone_number in column_data
+
 def phone_exists_in_sheet_1(phone_number):
     # Obtenez toutes les données de la première colonne (index 0)
     worksheet = client.open("PV - Publiweb").sheet1
@@ -509,9 +528,9 @@ def inbound_sms():
             elif 'GTE' in utm:
                 if not phone_exists_in_gte(phone):
                     append_to_sheet_gte(data, firstname, lastname, email, zipcode, utm)
-            elif 'AGYCI' in utm:
-                if not phone_exists_in_sheet_agyci(phone):
-                    append_to_sheet_agyci(data, firstname, lastname, email, zipcode, utm)
+            elif 'EYAL' in utm:
+                if not phone_exists_in_sheet_eyal(phone):
+                    append_to_sheet_eyal(data, firstname, lastname, email, zipcode, utm)
             elif "DEMARCHES-ADMINISTRATIVES" in utm:
                 if not phone_exists_in_sheet_demarches(phone):
                     append_to_sheet_demarches(data, firstname, lastname ,email, zipcode, utm )
