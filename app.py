@@ -111,6 +111,17 @@ def append_to_sheet_demarches(data, lastname, firstname, email, utm, zipcode): #
     sheet.append_row(row)
     print(f"Adding row with data: {row}")
 
+def append_to_sheet_gte(data, lastname, firstname, email, utm, zipcode): #, lastname, firstname,
+    # Accédez à la feuille Google par son nom.
+    sheet = client.open("GTE - Réponses 1").sheet1
+
+    # Convertissez le dictionnaire en une liste pour le garder simple
+    # Vous pouvez personnaliser cet ordre selon la structure de votre feuille.
+    row = [data['msisdn'], data['text'], data['message-timestamp'],firstname, lastname, zipcode ,email, utm ] 
+    # Ajoutez les données à la dernière ligne
+    sheet.append_row(row)
+    print(f"Adding row with data: {row}")
+
 def append_to_sheet_combles_publiweb(data, lastname, firstname, email, utm, zipcode): #, lastname, firstname,
     # Accédez à la feuille Google par son nom.
     sheet = client.open("Combles Publiweb - Réponses 1").sheet1
@@ -272,6 +283,12 @@ def append_to_sheet_agyci(data, lastname, firstname, email, utm, zipcode):
 def phone_exists_in_sheet_1(phone_number):
     # Obtenez toutes les données de la première colonne (index 0)
     worksheet = client.open("PV - Publiweb").sheet1
+    column_data = worksheet.col_values(1) # Si vous utilisez `gspread`
+    return phone_number in column_data
+
+def phone_exists_in_gte(phone_number):
+    # Obtenez toutes les données de la première colonne (index 0)
+    worksheet = client.open("GTE - Réponses 1").sheet1
     column_data = worksheet.col_values(1) # Si vous utilisez `gspread`
     return phone_number in column_data
 
@@ -489,6 +506,9 @@ def inbound_sms():
             elif 'ANR-CONSULTING' in utm:
                 if not phone_exist_in_sheet_anr_consulting(phone):
                     append_to_sheet_anr_consulting(data, firstname, lastname, email, zipcode, utm)
+            elif 'GTE' in utm:
+                if not phone_exists_in_gte(phone):
+                    append_to_sheet_gte(data, firstname, lastname, email, zipcode, utm)
             elif 'AGYCI' in utm:
                 if not phone_exists_in_sheet_agyci(phone):
                     append_to_sheet_agyci(data, firstname, lastname, email, zipcode, utm)
