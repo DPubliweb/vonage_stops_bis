@@ -156,6 +156,17 @@ def append_to_sheet_anr_consulting(data, lastname, firstname, email, utm, zipcod
     # Ajoutez les données à la dernière ligne
     sheet.append_row(row)
 
+def append_to_sheet_shilat_solutions(data, lastname, firstname, email, utm, zipcode):
+    # Accédez à la feuille Google par son nom.
+    sheet = client.open("Shilat Solutions - Réponses 1").sheet1
+
+    # Convertissez le dictionnaire en une liste pour le garder simple
+    # Vous pouvez personnaliser cet ordre selon la structure de votre feuille.
+    row = [data['msisdn'], data['text'], data['message-timestamp'],firstname, lastname, zipcode ,email, utm ]
+    
+    # Ajoutez les données à la dernière ligne
+    sheet.append_row(row)
+
 
 def append_to_sheet_nathan(data, lastname, firstname, email, utm, zipcode): #, lastname, firstname,
     # Accédez à la feuille Google par son nom.
@@ -395,6 +406,12 @@ def phone_exists_in_sheet_agyci(phone_number):
     column_data = worksheet.col_values(1) # Si vous utilisez `gspread`
     return phone_number in column_data
 
+def phone_exists_in_sheet_shilat_solutions(phone_number):
+    # Obtenez toutes les données de la première colonne (index 0)
+    worksheet = client.open("Shilat Solutions - Réponses 1").sheet1
+    column_data = worksheet.col_values(1) # Si vous utilisez `gspread`
+    return phone_number in column_data
+
 
 
 
@@ -528,6 +545,9 @@ def inbound_sms():
             elif 'GTE' in utm:
                 if not phone_exists_in_gte(phone):
                     append_to_sheet_gte(data, firstname, lastname, email, zipcode, utm)
+            elif 'COMPARATEUR' in utm:
+                if not phone_exists_in_sheet_shilat_solutions(phone):
+                    append_to_sheet_shilat_solutions(data, firstname, lastname, email, zipcode, utm)
             elif 'EYAL' in utm:
                 if not phone_exists_in_sheet_eyal(phone):
                     append_to_sheet_eyal(data, firstname, lastname, email, zipcode, utm)
